@@ -1,16 +1,25 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.*;
 
 public class Main {
     private static final String GAMES_DIR = "D://Java//Games";
-    private static File saveFile = new File(GAMES_DIR + "//savegames");
-    private static File zipFile = new File(saveFile.getAbsolutePath() + "//saves.zip");
-    private static File saveDatFile1 = new File(saveFile.getAbsolutePath() + "//save1.dat");
-    private static File saveDatFile2 = new File(saveFile.getAbsolutePath() + "//save2.dat");
-    private static File saveDatFile3 = new File(saveFile.getAbsolutePath() + "//save3.dat");
+    private static final String SAVE_DIR_PATH = GAMES_DIR + "//savegames";
+    private static final String ZIP_PATH = SAVE_DIR_PATH + "//saves.zip";
+    private static final String SAVE1_PATH = SAVE_DIR_PATH + "//save1.dat";
+    private static final String SAVE2_PATH = SAVE_DIR_PATH + "//save2.dat";
+    private static final String SAVE3_PATH = SAVE_DIR_PATH + "//save3.dat";
+    private static List saveFilesList = new ArrayList<String>();
     private static GameProgress save1 = new GameProgress(100, 100, 1, 0);
     private static GameProgress save2 = new GameProgress(50, 50, 10, 10_000.1);
     private static GameProgress save3 = new GameProgress(10, 20, 20, 21_500.5);
+
+    public static void fillFilePathList() {
+        saveFilesList.add(SAVE1_PATH);
+        saveFilesList.add(SAVE2_PATH);
+        saveFilesList.add(SAVE3_PATH);
+    }
 
     public static void saveGame(String path, GameProgress progress) {
         File file = new File(path);
@@ -26,12 +35,13 @@ public class Main {
         }
     }
 
-    public static void zipFiles(File zipFile, File[] saveFile) {
+    public static void zipFiles(String zipFile, List<String> filesPathList) {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(zipFile);
             ZipOutputStream zos = new ZipOutputStream(fos);
-            for (File file : saveFile) {
+            for (String filePath : filesPathList) {
+                File file = new File(filePath);
                 FileInputStream fis = new FileInputStream(file);
                 ZipEntry zipEntry = new ZipEntry(file.getName());
                 zos.putNextEntry(zipEntry);
@@ -47,12 +57,12 @@ public class Main {
         }
     }
 
-    public static void deleteFiles(File[] files) {
-        for (File file : files) {
+    public static void deleteFiles(List<String> listFilesPath) {
+        for (String filePath : listFilesPath) {
+            File file = new File(filePath);
             if (file.exists() && file.canWrite()) {
                 System.out.println(file.getAbsolutePath());
             }
-
             if (file.delete()) {
                 System.out.println(file.getName() + " deleted!");
             } else {
@@ -62,11 +72,11 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        saveGame(saveDatFile1.getAbsolutePath(), save1);
-        saveGame(saveDatFile2.getAbsolutePath(), save2);
-        saveGame(saveDatFile3.getAbsolutePath(), save3);
-        File[] files = new File[] {saveDatFile1, saveDatFile2, saveDatFile3};
-        zipFiles(zipFile, files);
-        deleteFiles(files);
+        saveGame(SAVE1_PATH, save1);
+        saveGame(SAVE2_PATH, save2);
+        saveGame(SAVE3_PATH, save3);
+        fillFilePathList();
+        zipFiles(ZIP_PATH, saveFilesList);
+        deleteFiles(saveFilesList);
     }
 }
