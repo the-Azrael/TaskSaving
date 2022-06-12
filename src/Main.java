@@ -30,6 +30,7 @@ public class Main {
             oos = new ObjectOutputStream(fos);
             oos.writeObject(progress);
             oos.close();
+            fos.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -61,13 +62,8 @@ public class Main {
         for (String filePath : listFilesPath) {
             File file = new File(filePath);
             if (file.exists() && file.canWrite()) {
-                System.out.println(file.getAbsolutePath());
+                file.delete();
             }
-            if (file.delete()) {
-                System.out.println(file.getName() + " deleted!");
-            } else {
-                System.out.println(file.getAbsolutePath() + " not deleted!");
-            };
         }
     }
 
